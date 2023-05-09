@@ -118,6 +118,7 @@ namespace PCCleaner
                         try
                         {
                             NewPD.RemovePath(int.Parse(args[1]));
+                            SaveFile.Write<Pathdata>(NewPD);
                         }
                         catch (Exception e)
                         {
@@ -132,7 +133,11 @@ namespace PCCleaner
                         {
                             if (item.identity == args[1])
                             {
-                                try { Process.Start("explorer.exe", item.path); }
+                                try
+                                {
+                                    Process.Start("explorer.exe", item.path);
+                                    Console.WriteLine(item.path);
+                                }
                                 catch (Exception e)
                                 {
                                     Console.WriteLine(e.Message);
@@ -146,14 +151,30 @@ namespace PCCleaner
                         Console.WriteLine("[add] [NameSlot] [Path Address] : For Ading new path slot");
                         Console.WriteLine("[list] : For showing list of all path");
                         Console.WriteLine("[clean] [NameSlot/all] : For Delete Specific folder / all slot with '.' ");
-                        Console.WriteLine("[remove] [NameSlot] : For removing a slot with SlotName");
+                        Console.WriteLine("[remove] [Index] : For removing a slot with SlotIndex");
                         Console.WriteLine("[open] [NameSlot] : For opening address folder");
                         Console.WriteLine("[exit] : For closing program");
+                        Console.WriteLine("[fixpath] [SlotIndex] (NewPath) : For fixing path");
                         break;
                     case "exit":
                         power = false;
                         break;
                     case "":
+                        break;
+                    case "fixpath":
+                        try
+                        {
+                            Pathdata.Apath NewApath = NewPD.allpath[int.Parse(args[1])];
+                            Console.Write("Write New Path-->>");
+                            NewApath.path = Console.ReadLine() ?? "";
+                            NewPD.allpath[int.Parse(args[1])] = NewApath;
+                            SaveFile.Write<Pathdata>(NewPD);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                            debug.LogSystem(e.Message, Debug.Logtype.erro);
+                        }
                         break;
                     default:
                         Console.WriteLine($"No arguments passed [{args[0]}]");
